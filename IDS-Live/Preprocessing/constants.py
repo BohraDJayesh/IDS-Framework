@@ -1,13 +1,12 @@
-from enum import Enum
 
 # PredictLabel() is an enum for BENIGN or ANOMALY prediction output of 
 # ML models doing novelty detection.
-class PredictLabel(Enum):
-       BENIGN = 1
-       ANOMALY = ['Web Attack  Brute Force',
-    'Web Attack  XSS',
-    'Web Attack - LFI',
-    'Web Attack  Sql Injection']
+
+BENIGN = 1
+ANOMALY = ['Web Attack  Brute Force',
+'Web Attack  XSS',
+'Web Attack - LFI',
+'Web Attack  Sql Injection']
 
 # Column names for CICFlowMeter generated datasets.
 COLUMNS = ['source ip', 'destination ip', 'source port', 'destination port', 'protocol', 'timestamp',

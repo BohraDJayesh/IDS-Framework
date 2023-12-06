@@ -9,7 +9,7 @@ import pandas as pd
 from CICFlowMeter.CICStart import startCIC , checkAndWriteCSV
 from CICCSVLoader.csvFlowLoader import CSVFlowLoader
 import mlstart
-from Preprocessing.constants import PredictLabel, COLUMNS
+from Preprocessing.constants import COLUMNS, ANOMALY
 import sys
 
 CSVFileName = 'startFlow.csv'
@@ -34,7 +34,7 @@ def runIDS(verbose=False):
         if not os.path.exists('logs/idslogs/ids.log'):
             file = open(os.path.join('logs/idslogs','ids.log'), 'w')
             file.close()
-        logging.basicConfig(filename=os.path.join('logs/idslogs','ids.log'), level=logging.INFO)
+        logging.basicConfig(filename=os.path.join('logs/idslogs/','ids.log'), level=logging.INFO)
         csvloader = CSVFlowLoader(os.path.join(CSVFilePath, CSVFileName))
 
         
@@ -48,7 +48,7 @@ def runIDS(verbose=False):
                 csValsDF = mlstart.colPreprocessing(csValsDF)
 
                 # Actual detection and printing results out in stdout.
-                if mlstart.predict(csValsDF)[0] in PredictLabel.ANOMALY:
+                if mlstart.predict(csValsDF)[0] in ANOMALY:
 
                     print("ANOMALY: %s" % (parsePredictionDF(csValsDF)))
                     logging.info("ANOMALY: %s" % (parsePredictionDF(csValsDF)))
@@ -60,11 +60,11 @@ def runIDS(verbose=False):
         csvloader.destroy()
 
 def parsePredictionDF(dataframe):
-    src_ip = dataframe["Src IP"].values[0]
-    src_port = dataframe["Src Port"].values[0]
-    dst_ip = dataframe["Dst IP"].values[0]
-    dst_port = dataframe["Dst Port"].values[0]
-    timestamp = dataframe["Timestamp"].values[0]
+    src_ip = dataframe["source ip"].values[0]
+    src_port = dataframe["source port"].values[0]
+    dst_ip = dataframe["destination ip"].values[0]
+    dst_port = dataframe["destination port"].values[0]
+    timestamp = dataframe["timestamp"].values[0]
     return "%s %s:%s => %s:%s" % (timestamp,src_ip, src_port, dst_ip, dst_port)
 
 

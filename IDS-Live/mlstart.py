@@ -26,12 +26,11 @@ def colPreprocessing(dfo):
     # Converting String character to numericals.
     string_features = list(dfo.select_dtypes(include=['object']).columns)
 
-    excluded = ['source ip', 'destination ip', 'source port', 'destination port', 'protocol', 'timestamp']
-    dfo = dfo.drop(columns=excluded, errors='ignore')
-
     #Taking importang columns rest are droping out.
 
-    columns_to_keep = ['Average Packet Size', 'Flow Bytes/s', 'Max Packet Length',
+    columns_to_keep = ['source ip', 'destination ip', 'source port',
+                    'destination port', 'protocol', 'timestamp' ,'Average Packet Size',
+                    'Flow Bytes/s', 'Max Packet Length',
                     'Fwd Packet Length Mean', 'Fwd IAT Min',
                     'Total Length of Fwd Packets', 'Flow IAT Mean',
                     'Fwd Packet Length Max', 'Fwd IAT Std', 'Fwd Header Length']
@@ -43,5 +42,7 @@ def colPreprocessing(dfo):
     return df
 
 def predict(df):
+    excluded = ['source ip', 'destination ip', 'source port', 'destination port', 'protocol', 'timestamp']
+    df = df.drop(columns=excluded, errors='ignore')
     predictions = model.predict(df)
     return predictions
