@@ -9,16 +9,26 @@ import pandas as pd
 from CICFlowMeter.CICStart import startCIC , checkAndWriteCSV
 from CICCSVLoader.csvFlowLoader import CSVFlowLoader
 import mlstart
-from Preprocessing.constants import PredictLabel
+from Preprocessing.constants import PredictLabel, COLUMNS
+import sys
 
 CSVFileName = 'startFlow.csv'
-CSVFilePath = 'IDS-Live/CSV/'
+CSVFilePath = 'CSV/'
 command = f" sudo cicflowmeter -i en0 -c /Users/jayeshduttbohra/Desktop/JD/Projects/IDS-Framework/IDS-Live/CSV/startFlow.csv"
 DATACLEAN_PIPELINE_FILEPATH = "Preprocessing/joblib_dumps/dataclean_pipeline.joblib"
 DATAPREP_PIPELINE_FILEPATH = "Preprocessing/joblib_dumps/dataprep_pipeline.joblib"
 
-def runIDS():
-    print("Starting IDS...")
+def runIDS(verbose=False):
+    
+    dots = 0
+    start_time = time.time()
+
+    while time.time() - start_time < 5:
+        sys.stdout.write("\rStarting" + "." * dots)
+        sys.stdout.flush()
+        dots = (dots + 1) % 4
+        time.sleep(0.5)  # Adjust the sleep time as needed
+
     try:
         # Create log file if it does not exist.
         if not os.path.exists('logs/idslogs/ids.log'):
@@ -32,13 +42,13 @@ def runIDS():
         while True:
             for flowline in csvloader.tailFile():
                 csValsArray = [list(flowline.split(","))]
-                csValsDF = pd.DataFrame(csValsArray, columns=PredictLabel.COLUMNS)
+                csValsDF = pd.DataFrame(csValsArray, columns=COLUMNS)
 
                 #Sending to mlstart for preprocessing and prediction.
                 csValsDF = mlstart.colPreprocessing(csValsDF)
 
                 # Actual detection and printing results out in stdout.
-                if mlstart.predict(csValsDF) in PredictLabel.ANOMALY:
+                if mlstart.predict(csValsDF)[0] in PredictLabel.ANOMALY:
 
                     print("ANOMALY: %s" % (parsePredictionDF(csValsDF)))
                     logging.info("ANOMALY: %s" % (parsePredictionDF(csValsDF)))

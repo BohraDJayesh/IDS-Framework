@@ -1,8 +1,21 @@
 import subprocess
 import os
 import csv
+import psutil # To know if the command is already executing or not !!!
+
+def is_process_running(command):
+    for process in psutil.process_iter(['pid', 'name', 'cmdline']):
+        if command in process.info['cmdline']:
+            return True
+    return False
+
 def startCIC(command):
     
+
+    if(is_process_running('cicflowmeter') == True):
+        return
+
+
     try:
         # This section will run the command by opening a seperate terminal specially for cicflowmeter to run properly
         applescript = f'tell application "Terminal" to do script "{command}"'
